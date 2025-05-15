@@ -12,7 +12,7 @@ int** create_matrix(int node_number, Edge* edge_list) {
     //allocate array for matrix
     int** matrix = malloc(sizeof(int*)*node_number);
     for (int i= 0; i < node_number; i++) {
-        matrix[i] = malloc(sizeof(int)*node_number);
+        matrix[i] = calloc(sizeof(int), node_number);
     }
 
     //fill data
@@ -20,13 +20,14 @@ int** create_matrix(int node_number, Edge* edge_list) {
     while (edge_list[el_index].weight != -1) {
         Edge e = edge_list[el_index];
         matrix[e.from][e.to] = e.weight;
+        matrix[e.to][e.from] = -e.weight;
         el_index++;       
     }
     //return finished matrix
     return matrix;
 }
 
-void print_matrix(int node_number, int matrix[node_number][node_number]) {
+void print_matrix(int node_number, int** matrix) {
     for (int i = 0; i < node_number; i++) {
         for (int j =0; j < node_number; j++) {
             int value = matrix[i][j];
@@ -51,11 +52,16 @@ int main(void) {
         {-1, -1, -1}, //sentinel
     };
 
-    printf("Test1\n");
+    //printf("Test1\n");
 
-    int** my_matrix = create_matrix(9, list);
+    int** my_matrix = create_matrix(10, list);
 
-    printf("test2\n");
+    //printf("test2\n");
 
-    print_matrix(9, my_matrix);
+    print_matrix(10, my_matrix);
+
+    for (int i = 0; i < 10; i++) {
+        free(my_matrix[i]);
+    }
+    free(my_matrix);
 }
