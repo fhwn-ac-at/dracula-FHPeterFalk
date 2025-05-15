@@ -53,9 +53,9 @@ int main(void) {
 
     printf("Test1\n");
 
-    int** my_matrix = create_matrix(7, list);
+    int** my_matrix = create_matrix(9, list);
 
     printf("test2\n");
 
-    print_matrix(7, my_matrix);
+    print_matrix(9, my_matrix);
 }
