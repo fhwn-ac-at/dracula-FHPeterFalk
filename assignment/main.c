@@ -60,17 +60,21 @@ int main(int argc, char *argv[]) {
 
     FILE* boardfile = fopen(filename, "r");
     if (!boardfile) {
-        fprintf(stderr, "Failed to open input file for the game board!");
+        fprintf(stderr, "Failed to open input file for the game board!\n");
         exit(EXIT_FAILURE);
     }
 
     //snakes and ladders is functionally linear
     //therefore although the board is technically 2D, it will be implemented with a 1D array
-    int total_squares = n * m;
+    int total_squares = (n * m) + 1; //+1 due to adding a "Start square"
     Node gameboard[total_squares];
 
-    create_gameboard(gameboard, total_squares, boardfile);
+    create_gameboard(gameboard, n, m, exact_roll, 6, boardfile);
 
     fclose(boardfile);
+
+    validate_board(gameboard, n, m);
+
+    print_board(gameboard, n, m);
 
 }
