@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -19,3 +21,5 @@ void create_gameboard (Node* board, int n, int m, bool exact, int dice_max, FILE
 void print_board(Node* board, int n, int m);
 
 void validate_board(Node* board, int n, int m);
+
+void free_edges(Node* board, int totalsize);

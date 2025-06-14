@@ -2,14 +2,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int* create_edge_list (int position, int dice_max) {
+int* create_edge_list (int position, int dice_max, int totalsize, bool exact) {
     int* edge_list = malloc(sizeof(int) * dice_max);
     if (!edge_list) {
         fprintf(stderr, "malloc failure! terminating...\n");
         exit(EXIT_FAILURE);
     }
     for (int i = 0; i < dice_max; i++) {
-        edge_list[i] = position + i + 1;
+        int dest = position + i + 1;
+        if (dest > totalsize) {
+            if (exact) {
+                dest = position;
+            } else {
+                dest = totalsize;
+            }
+        }
+        edge_list[i] = dest;
     }
     return edge_list;
 }
@@ -71,15 +79,7 @@ void create_gameboard(Node *board, int n, int m, bool exact, int dice_max, FILE 
             
             //fill corresponding Node struct:
             board[arr_pos].id = arr_pos;
-            board[arr_pos].edges = create_edge_list(arr_pos, dice_max);    
-            
-            //if exact rolls are required AND if assigning the edge_list for a position that could exceed the goal square with some dice rolls
-            if (exact && arr_pos <= ((n*m)-dice_max)) {
-                //for dice rolls that exceed the goal square, the edge refers back to the origin square so that moving along it doesn't change position.
-                for (int i = dice_max; arr_pos+i > n*m; i--) {
-                    board[arr_pos].edges[i] = arr_pos;                
-                }
-            }
+            board[arr_pos].edges = create_edge_list(arr_pos, dice_max, n*m, exact);
             
             // Assign snake/ladder info to this square
             if (val) {
@@ -112,7 +112,7 @@ void create_gameboard(Node *board, int n, int m, bool exact, int dice_max, FILE 
 
     //assign start square:
     board[0].id = 0;
-    board[0].edges = create_edge_list(0, dice_max);
+    board[0].edges = create_edge_list(0, dice_max, n*m, exact);
     board[0].snake.is_true = false;
     board[0].snake.to_where = -1;
 }
@@ -183,4 +183,10 @@ void validate_board(Node* board, int n, int m) {
 
     //printf("gameboard is valid!\n");
 
+}
+
+void free_edges(Node* board, int totalsize) {
+    for (int i = 0; i<totalsize; i++) {
+        free(board[i].edges);
+    }
 }
