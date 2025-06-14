@@ -12,12 +12,14 @@ unsigned int get_urandom_uint(int fd) {
     return num;
 }
 
+//returns a random number based on the size of the chosen die
 int roll_dice(int dice_max, int fd) {
     unsigned int random = get_urandom_uint(fd);
     int roll = (random % dice_max) + 1;
     return roll;
 }
 
+//initializes History struct with starting capacity of 8
 void init_history(History* hist) {
     hist->capacity = 8;
     hist->amount = 0;
@@ -28,6 +30,7 @@ void init_history(History* hist) {
     }
 }
 
+//appends data to dynamic array inside of history struct and updates corresponding struct members, doubles capacity every time the array reaches its limit
 void append_history(History* hist, int data) {
     if (hist->amount == hist->capacity) {
         hist->capacity *= 2;

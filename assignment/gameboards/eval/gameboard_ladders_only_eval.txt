@@ -1,0 +1,63 @@
+Gameboard with a large amount of ladders and no snakes
+
+
+The used gameboard is:
+[100     ] [ 99     ] [ 98     ] [ 97     ] [ 96     ] [ 95     ] [ 94     ] [ 93     ] [ 92     ] [ 91     ] 
+[ 81-> 93] [ 82     ] [ 83-> 92] [ 84     ] [ 85-> 94] [ 86     ] [ 87-> 95] [ 88     ] [ 89-> 96] [ 90     ] 
+[ 80     ] [ 79     ] [ 78     ] [ 77     ] [ 76     ] [ 75     ] [ 74     ] [ 73     ] [ 72-> 84] [ 71-> 82] 
+[ 61     ] [ 62     ] [ 63     ] [ 64     ] [ 65     ] [ 66     ] [ 67     ] [ 68     ] [ 69     ] [ 70     ] 
+[ 60     ] [ 59     ] [ 58     ] [ 57     ] [ 56     ] [ 55     ] [ 54     ] [ 53     ] [ 52     ] [ 51     ] 
+[ 41     ] [ 42     ] [ 43     ] [ 44     ] [ 45     ] [ 46     ] [ 47     ] [ 48     ] [ 49     ] [ 50     ] 
+[ 40     ] [ 39     ] [ 38     ] [ 37     ] [ 36     ] [ 35     ] [ 34     ] [ 33     ] [ 32     ] [ 31     ] 
+[ 21     ] [ 22     ] [ 23     ] [ 24     ] [ 25     ] [ 26     ] [ 27     ] [ 28     ] [ 29     ] [ 30->100] 
+[ 20     ] [ 19-> 70] [ 18     ] [ 17-> 80] [ 16     ] [ 15-> 60] [ 14     ] [ 13-> 44] [ 12     ] [ 11     ] 
+[  1     ] [  2     ] [  3-> 99] [  4     ] [  5     ] [  6-> 98] [  7     ] [  8     ] [  9-> 97] [ 10     ] 
+[Start ^]
+
+the average amount of rolls to win was: 6.750600
+the shortest number of roles, by Player 0: 2
+Series: 
+roll 0: 3
+roll 1: 1
+Absolute and relative frequency of snakes and ladders hit: 
+Snake/ladder at 3 hit: 2297 times, relative: 0.176272
+Snake/ladder at 6 hit: 3089 times, relative: 0.237050
+Snake/ladder at 9 hit: 1319 times, relative: 0.101220
+Snake/ladder at 13 hit: 1059 times, relative: 0.081268
+Snake/ladder at 15 hit: 638 times, relative: 0.048960
+Snake/ladder at 17 hit: 542 times, relative: 0.041593
+Snake/ladder at 19 hit: 278 times, relative: 0.021334
+Snake/ladder at 30 hit: 238 times, relative: 0.018264
+Snake/ladder at 71 hit: 700 times, relative: 0.053718
+Snake/ladder at 72 hit: 576 times, relative: 0.044202
+Snake/ladder at 81 hit: 398 times, relative: 0.030543
+Snake/ladder at 83 hit: 524 times, relative: 0.040212
+Snake/ladder at 85 hit: 595 times, relative: 0.045660
+Snake/ladder at 87 hit: 426 times, relative: 0.032691
+Snake/ladder at 89 hit: 352 times, relative: 0.027013
+Simulations failed: 0
+
+with exact rolls:
+
+the average amount of rolls to win was: 11.330900
+the shortest number of roles, by Player 4: 2
+Series: 
+roll 0: 3
+roll 1: 1
+Absolute and relative frequency of snakes and ladders hit: 
+Snake/ladder at 3 hit: 2281 times, relative: 0.174856
+Snake/ladder at 6 hit: 3143 times, relative: 0.240935
+Snake/ladder at 9 hit: 1289 times, relative: 0.098812
+Snake/ladder at 13 hit: 1009 times, relative: 0.077348
+Snake/ladder at 15 hit: 679 times, relative: 0.052051
+Snake/ladder at 17 hit: 524 times, relative: 0.040169
+Snake/ladder at 19 hit: 299 times, relative: 0.022921
+Snake/ladder at 30 hit: 229 times, relative: 0.017555
+Snake/ladder at 71 hit: 715 times, relative: 0.054810
+Snake/ladder at 72 hit: 593 times, relative: 0.045458
+Snake/ladder at 81 hit: 453 times, relative: 0.034726
+Snake/ladder at 83 hit: 476 times, relative: 0.036489
+Snake/ladder at 85 hit: 598 times, relative: 0.045841
+Snake/ladder at 87 hit: 415 times, relative: 0.031813
+Snake/ladder at 89 hit: 342 times, relative: 0.026217
+Simulations failed: 0
