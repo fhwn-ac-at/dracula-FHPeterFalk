@@ -27,4 +27,6 @@ void free_history(History* hist);
 
 void init_player(Player* p);
 
-void simulate_game(Player* p, Node* board, int board_size, int dice_max, int fd);
+void free_player(Player* p);
+
+void simulate_game(Player* p, Node* board, int board_size, int dice_max, int turn_limit, int fd);

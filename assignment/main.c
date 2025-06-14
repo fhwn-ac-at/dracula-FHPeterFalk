@@ -1,9 +1,11 @@
+#include <string.h>
 #include <stdio.h>
 #include <getopt.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <limits.h>
 
 #include "graph.h"
 #include "simulation.h"
@@ -17,9 +19,10 @@ int main(int argc, char *argv[]) {
     bool exact_roll = false; // -e
     int turn_limit = -1;     // -l
     int dice_max = -1;  //-d
+    int sim_amount = -1;
     char* endptr;
 
-    while ((opt = getopt(argc, argv, "n:m:f:el:d:")) != -1) {
+    while ((opt = getopt(argc, argv, "n:m:f:el:d:s:")) != -1) {
         switch (opt) {
             case 'n':
                 n = strtol(optarg, &endptr, 10);
@@ -55,17 +58,24 @@ int main(int argc, char *argv[]) {
                     exit(EXIT_FAILURE);
                 }
                 break;
+            case 's':
+                sim_amount = strtol(optarg, &endptr, 10);
+                if (*endptr != '\0') {
+                    fprintf(stderr, "Error: -s requires a valid integer!\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
             default:
-                fprintf(stderr, "Usage: %s -n cols -m rows -f boardfile [-e] -l turnlimit -d dice_max\n", argv[0]);
+                fprintf(stderr, "Usage: %s -n cols -m rows -f boardfile [-e] -l turnlimit -d dice_max -s simulation_amount\n", argv[0]);
                 exit(EXIT_FAILURE);
         }
     }
 
-    if (filename == NULL || turn_limit == -1 || m == -1 || n == -1 || dice_max == -1 ||optind < argc) {
-        fprintf(stderr, "Usage: %s -n cols -m rows -f boardfile [-e] -l turnlimit -d dice_max\n", argv[0]);
+    if (filename == NULL || turn_limit == -1 || m == -1 || n == -1 || dice_max == -1 || sim_amount == -1 ||optind < argc) {
+        fprintf(stderr, "Usage: %s -n cols -m rows -f boardfile [-e] -l turnlimit -d dice_max -s simulation_amount\n", argv[0]);
         exit(EXIT_FAILURE);
-    } else if (turn_limit <= 0 || m <= 0 || n <= 0 || dice_max <= 0) {
-        fprintf(stderr, "parameters m, n, l and d must be greater than  0!\n");
+    } else if (turn_limit <= 0 || m <= 0 || n <= 0 || dice_max <= 0 || sim_amount <= 0) {
+        fprintf(stderr, "parameters m, n, l, d and s must be greater than  0!\n");
         exit(EXIT_FAILURE);
     }
 
@@ -95,32 +105,80 @@ int main(int argc, char *argv[]) {
 
     print_board(gameboard, n, m);
 
-    Player p;
-    p.id = 1;
-    init_player(&p);
+    double roll_average = 0.0;
+    int roll_min = INT_MAX;
+    int roll_min_id = -1;
+    int* roll_min_series = NULL;
+    int* snakes_hit = calloc(total_squares, sizeof(int));
+    if (!snakes_hit) { perror("malloc"); exit(EXIT_FAILURE); }
+    int failure_amount = 0;
 
-    simulate_game(&p, gameboard, total_squares, dice_max, fd);
+    
+    for (int i = 0; i < sim_amount; i++) {
+        //initialize new player
+        Player p;
+        p.id = i;
+        init_player(&p);
 
-    printf("Player id: %d\n", p.id);
-    printf("Player rolls:\n");
-    for (int i = 0; i<p.roll_history.amount; i++) {
-        printf("roll %d: %d\n", i, p.roll_history.data[i]);
+        //run simulation
+        simulate_game(&p, gameboard, total_squares, dice_max, turn_limit, fd);
+        int rolls = p.roll_history.amount;
+        
+        if (p.position != -1) {
+            //update statistics
+            //update smallest amount of rolls
+            if (rolls < roll_min) {
+                free(roll_min_series);
+
+                roll_min = p.roll_history.amount;
+                roll_min_id = p.id;
+                roll_min_series = malloc(roll_min * sizeof(int));
+                if (!roll_min_series) { perror("malloc"); exit(EXIT_FAILURE); }
+                memcpy(roll_min_series, p.roll_history.data, roll_min *sizeof(int));
+            }
+            //update average
+            roll_average += ((double)rolls - roll_average) / (i + 1);
+            //update snakes hit
+            for (int i = 0; i < p.snake_history.amount; i++) {
+                snakes_hit[p.snake_history.data[i]]++;
+            }
+        } else {
+            failure_amount++;
+        }
+
+
+        //free player struct
+        free_player(&p);
     }
-    printf("Player Snakes:\n");
-    for (int i = 0; i<p.snake_history.amount; i++) {
-        printf("Snake %d: %d\n", i, p.snake_history.data[i]);
-    }
 
-    for (int i = 100; i > 94; i--) {
-        for (int j = 0; j < 6; j++) {
-            printf("Square: %d; Edge: %d = %d\n", i, j, gameboard[i].edges[j]);
+    //calculate total snakes/ladders hit
+    int total_hits = 0;
+    for (int i = 1; i < total_squares; i++) { //start square will never be a snake/ladder so i can start at 1
+        if (snakes_hit[i] != 0) {
+            total_hits += snakes_hit[i];
         }
     }
-    
-    free_history(&p.roll_history);
-    free_history(&p.snake_history);
 
+    //diplay statistics:
+    printf("\nthe average amount of rolls to win was: %f\n", roll_average);
+    printf("the shortest number of roles, by Player %d: %d\n", roll_min_id, roll_min);
+    printf("Series: \n");
+    for (int i = 0; i < roll_min; i++) {
+        printf("roll %d: %d\n", i+1, roll_min_series[i]);
+    }
+    printf("Absolute and relative frequency of snakes and ladders hit: \n");
+    for (int i = 1; i < total_squares; i++) {
+        if (snakes_hit[i] != 0) {
+            double relative = snakes_hit[i] / (float)total_hits;
+            printf("Snake/ladder at %d hit: %d times, relative: %f\n", i, snakes_hit[i], relative);
+        }
+    }
+    printf("Simulations failed: %d\n", failure_amount);
+    
+    //memory cleanup
     free_edges(gameboard, total_squares);
+    free(roll_min_series);
+    free(snakes_hit);
 
     //close file descriptor
     close(fd);

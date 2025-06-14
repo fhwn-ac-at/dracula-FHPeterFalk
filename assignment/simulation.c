@@ -53,8 +53,14 @@ void init_player(Player* p) {
     init_history(&p->snake_history);
 }
 
-void simulate_game(Player *p, Node *board, int board_size,int dice_max, int fd) {
-    while (p->position != board_size-1) {
+void free_player(Player *p) {
+    free_history(&p->roll_history);
+    free_history(&p->snake_history);
+}
+
+void simulate_game(Player *p, Node *board, int board_size,int dice_max, int turn_limit, int fd) {
+    int turn = 0;
+    while (p->position != board_size-1 && turn < turn_limit) {
         int dice_roll = roll_dice(dice_max, fd);
         p->position = board[p->position].edges[dice_roll-1];
         if (board[p->position].snake.is_true) {
@@ -62,5 +68,7 @@ void simulate_game(Player *p, Node *board, int board_size,int dice_max, int fd) 
             p->position = board[p->position].snake.to_where;
         }
         append_history(&p->roll_history, dice_roll);
+        turn++;
     }
+    if (p->position != board_size-1) {p->position = -1;}
 }
